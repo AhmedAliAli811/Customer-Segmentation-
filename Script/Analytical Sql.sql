@@ -1,4 +1,4 @@
-
+use [Online Retail]
 --monthly sales growth--
 select year(InvoiceDate) as Year
 ,month(InvoiceDate) as Month
@@ -6,7 +6,7 @@ select year(InvoiceDate) as Year
 ,lag(sum(abs(Quantity * UnitPrice))) over (order by year(InvoiceDate), month(InvoiceDate)) as PriorMonthSales
 ,((sum(abs(Quantity * UnitPrice)) - lag(sum(abs(Quantity * UnitPrice))) over (order by year(InvoiceDate), month(InvoiceDate))) 
 / lag(sum(abs(Quantity * UnitPrice))) over (order by year(InvoiceDate), month(InvoiceDate))) * 100 as MonthlySalesGrowth
-from [Online Retail]
+from OnlineRetail
 where InvoiceDate is not null
 group by year(InvoiceDate), month(InvoiceDate)
 order by Year, Month
@@ -19,7 +19,7 @@ select StockCode as Product_ID
 ,sum(abs(Quantity * UnitPrice)) as TotalSales
 ,((sum(abs(Quantity * UnitPrice)) - lag(sum(Quantity * UnitPrice)) over (partition by StockCode order by year(InvoiceDate), month(InvoiceDate)))
      / nullif(lag(sum(Quantity * UnitPrice)) over (partition by StockCode order by year(InvoiceDate), month(InvoiceDate)), 0)) * 100 as MonthlySalesGrowth
-from [Online Retail]
+from OnlineRetail
 where InvoiceDate is not null and  Description is not null
 group by StockCode , Description, year(InvoiceDate), month(InvoiceDate)
 order by StockCode , Description, Year, Month
@@ -28,7 +28,7 @@ order by StockCode , Description, Year, Month
 select Country
 ,sum(abs(Quantity * UnitPrice)) as TotalSales
 ,(sum(abs(Quantity * UnitPrice)) * 100.0) / sum(sum(abs(Quantity * UnitPrice))) over () as SalesVolume
-from [Online Retail]
+from OnlineRetail
 where InvoiceDate is not null and Country is not null
 group by Country
 order by SalesVolume desc
@@ -110,7 +110,7 @@ with  CustomerActivityOverview as
 		, format(max(max(InvoiceDate)) over () , 'dd-MM-yyyy' ) as MostRecentOrderDate
 		, datediff(day, max(InvoiceDate), max(max(InvoiceDate)) over ()) as DaysofAbsence
 		, count(distinct(InvoiceNo)) as NumOfOrders
-	from [Online Retail]
+	from OnlineRetail
 	where CustomerID is not null and InvoiceDate is not null and UnitPrice is not null 
 	group by CustomerID
 )
